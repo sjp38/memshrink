@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
 	sz_mem = (size_t)atoll(argv[1]);
 	mem = malloc(sz_mem);
-	memset(mem, 0, sz_mem);
+	memset(mem, 1, sz_mem);
 
 	printf("Enter any character to exit\n");
 	if (scanf("%c", &tmp) == 0)
