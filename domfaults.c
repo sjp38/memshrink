@@ -1,13 +1,22 @@
 #include <err.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+void *mem;
+
+void sighandler(int signo)
+{
+	free(mem);
+	printf("bye\n");
+	signal(SIGINT, SIG_DFL);
+}
 
 int main(int argc, char *argv[])
 {
 	size_t sz_mem;
-	void *mem;
-	char tmp;
 
 	if (argc < 2)
 		errx(1, "Usage: %s <size of memory to alloc/fault>", argv[0]);
@@ -16,10 +25,10 @@ int main(int argc, char *argv[])
 	mem = malloc(sz_mem);
 	memset(mem, 1, sz_mem);
 
-	printf("Enter any character to exit\n");
-	if (scanf("%c", &tmp) == 0)
-		err(1, "scanf returned 0");
-	free(mem);
+	signal(SIGINT, sighandler);
+	while (1)
+		sleep(1);
 
+	printf("goodbye\n");
 	return 0;
 }
