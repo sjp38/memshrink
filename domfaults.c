@@ -6,18 +6,23 @@
 #include <unistd.h>
 
 void *mem;
+size_t sz_mem;
 
 void sighandler(int signo)
 {
-	free(mem);
-	printf("bye\n");
-	signal(SIGINT, SIG_DFL);
+	switch (signo) {
+	case SIGUSR1:
+		memset(mem, 1, sz_mem);
+		break;
+	case SIGINT:
+		free(mem);
+		exit(0);
+		break;
+	}
 }
 
 int main(int argc, char *argv[])
 {
-	size_t sz_mem;
-
 	if (argc < 2)
 		errx(1, "Usage: %s <size of memory to alloc/fault>", argv[0]);
 
@@ -26,6 +31,7 @@ int main(int argc, char *argv[])
 	memset(mem, 1, sz_mem);
 
 	signal(SIGINT, sighandler);
+	signal(SIGUSR1, sighandler);
 	while (1)
 		sleep(1);
 
